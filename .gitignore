@@ -1,0 +1,7 @@
+*.o
+*.map
+*.tar
+*.elf
+*.bin
+*.log
+*.pcap
