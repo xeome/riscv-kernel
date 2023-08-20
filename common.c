@@ -2,6 +2,15 @@
 
 void putchar(char ch);
 
+/**
+ * @brief This function implements a basic version of printf that supports the following format specifiers:
+ *        %s - string
+ *        %d - decimal integer
+ *        %x - hexadecimal integer
+ *
+ * @param fmt Format string
+ * @param ... Variable arguments
+ */
 void printf(const char* fmt, ...) {
     va_list vargs;
     va_start(vargs, fmt);
@@ -57,4 +66,75 @@ void printf(const char* fmt, ...) {
     }
 
     va_end(vargs);
+}
+
+/**
+ * Sets the first 'n' bytes of the memory area pointed to by 'buf' to the specified value 'c'.
+ *
+ * @param buf Pointer to the memory area to be filled.
+ * @param c Value to be set. The value is passed as an int, but the function fills the memory using the unsigned char
+ * conversion of this value.
+ * @param n Number of bytes to be set to the value.
+ *
+ * @return A pointer to the memory area 'buf'.
+ */
+void* memset(void* buf, char c, size_t n) {
+    uint8_t* p = (uint8_t*)buf;
+
+    // Loop to write the value 'c' to 'n' bytes in memory
+    while (n--)
+        *p++ = c;  // Write 'c' to the current address and increment it by 1
+    // Return the original memory address
+    return buf;
+}
+
+/**
+ * Copies n bytes from memory area src to memory area dst.
+ *
+ * @param dst Pointer to the destination array where the content is to be copied.
+ * @param src Pointer to the source of data to be copied.
+ * @param n Number of bytes to copy.
+ *
+ * @return A pointer to the destination array, which is dst.
+ */
+void* memcpy(void* dst, const void* src, size_t n) {
+    uint8_t* d = (uint8_t*)dst;
+    const uint8_t* s = (const uint8_t*)src;
+    while (n--)
+        *d++ = *s++;  // Copy the current byte and increment the pointers
+    return dst;
+}
+
+/**
+ * Copies the string pointed to by src, including the null character, to the buffer pointed to by dst.
+ *
+ * @param dst The destination buffer to copy the string to.
+ * @param src The source string to copy from.
+ * @return A pointer to the destination buffer.
+ */
+char* strcpy(char* dst, const char* src) {
+    char* d = dst;
+    while (*src)
+        *d++ = *src++;
+    *d = '\0';
+    return dst;
+}
+/**
+ * Compares two strings.
+ *
+ * @param s1 The first string to compare.
+ * @param s2 The second string to compare.
+ *
+ * @return An integer less than, equal to, or greater than zero if s1 is found, respectively, to be less than, to match,
+ * or be greater than s2.
+ */
+int strcmp(const char* s1, const char* s2) {
+    while (*s1 && *s2) {
+        if (*s1 != *s2)
+            break;
+        s1++;
+        s2++;
+    }
+
+    return *s1 - *s2;
 }
