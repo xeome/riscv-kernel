@@ -6,10 +6,21 @@ This is a simple toy kernel for RISC-V.
 ## Table of Contents
 - [riscv-kernel](#riscv-kernel)
   - [Table of Contents](#table-of-contents)
+  - [Features](#features)
   - [Run](#run)
   - [Acknowledgements](#acknowledgements)
 
 ---
+
+## Features
+- [x] Printf
+- [x] Context switching
+- [x] Exception handling
+- [x] Memory allocation
+- [x] Page tables 
+- [ ] User mode
+- [ ] Disk device drivers
+- [ ] File IO
 
 ## Run
 ```bash

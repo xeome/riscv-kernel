@@ -67,13 +67,23 @@ struct trap_frame {
 #define PROC_RUNNABLE 1  // Process is runnable
 
 struct process {
-    int pid;              // Process ID
-    int state;            // Process state
-    vaddr_t sp;           // Stack pointer
-    uint8_t stack[8192];  // 8KB stack
+    int pid;               // Process ID
+    int state;             // Process state
+    vaddr_t sp;            // Stack pointer
+    uint32_t* page_table;  // Page table
+    uint8_t stack[8192];   // 8KB stack
 };
 
 void kernel_main(void);
 void yield(void);
 void switch_context(uint32_t* prev_sp, uint32_t* next_sp);
 void trap_handler(struct trap_frame* tf);
+void map_page(uint32_t* page_table, vaddr_t va, paddr_t pa, uint32_t flags);
+paddr_t alloc_pages(size_t n);
+
+#define SATP_SV32 (1u << 31)
+#define PAGE_V (1 << 0)  // Enable bit
+#define PAGE_R (1 << 1)  // Read bit
+#define PAGE_W (1 << 2)  // Write bit
+#define PAGE_X (1 << 3)  // Execute bit
+#define PAGE_U (1 << 4)  // User bit
