@@ -2,6 +2,19 @@
 
 #include "common.h"
 
+#define SATP_SV32 (1u << 31)
+#define PAGE_V (1 << 0)  // Enable bit
+#define PAGE_R (1 << 1)  // Read bit
+#define PAGE_W (1 << 2)  // Write bit
+#define PAGE_X (1 << 3)  // Execute bit
+#define PAGE_U (1 << 4)  // User bit
+#define PROCS_MAX 8      // Maximum number of processes
+#define PROC_UNUSED 0    // Process is not in use
+#define PROC_RUNNABLE 1  // Process is runnable
+#define USER_BASE 0x1000000
+#define SSTATUS_SPIE (1 << 5)
+#define SCAUSE_ECALL 8
+
 struct sbiret {
     long error;
     long value;
@@ -62,10 +75,6 @@ struct trap_frame {
         __asm__ __volatile__("csrw " #reg ", %0" ::"r"(__tmp)); \
     } while (0)
 
-#define PROCS_MAX 8      // Maximum number of processes
-#define PROC_UNUSED 0    // Process is not in use
-#define PROC_RUNNABLE 1  // Process is runnable
-
 struct process {
     int pid;               // Process ID
     int state;             // Process state
@@ -80,10 +89,3 @@ void switch_context(uint32_t* prev_sp, uint32_t* next_sp);
 void trap_handler(struct trap_frame* tf);
 void map_page(uint32_t* page_table, vaddr_t va, paddr_t pa, uint32_t flags);
 paddr_t alloc_pages(size_t n);
-
-#define SATP_SV32 (1u << 31)
-#define PAGE_V (1 << 0)  // Enable bit
-#define PAGE_R (1 << 1)  // Read bit
-#define PAGE_W (1 << 2)  // Write bit
-#define PAGE_X (1 << 3)  // Execute bit
-#define PAGE_U (1 << 4)  // User bit
