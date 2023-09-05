@@ -11,6 +11,7 @@
 #define PROCS_MAX 8      // Maximum number of processes
 #define PROC_UNUSED 0    // Process is not in use
 #define PROC_RUNNABLE 1  // Process is runnable
+#define PROC_EXITED 2
 #define USER_BASE 0x1000000
 #define SSTATUS_SPIE (1 << 5)
 #define SCAUSE_ECALL 8
@@ -89,3 +90,4 @@ void switch_context(uint32_t* prev_sp, uint32_t* next_sp);
 void trap_handler(struct trap_frame* tf);
 void map_page(uint32_t* page_table, vaddr_t va, paddr_t pa, uint32_t flags);
 paddr_t alloc_pages(size_t n);
+long getchar(void);

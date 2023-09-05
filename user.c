@@ -2,13 +2,12 @@
 
 extern char __stack_top[];
 
-__attribute__((noreturn)) void exit(void) {
-    for (;;)
-        ;
-}
-
 void putchar(char c) {
     syscall(SYS_PUTCHAR, c, 0, 0);
+}
+
+int getchar(void) {
+    return syscall(SYS_GETCHAR, 0, 0, 0);
 }
 
 __attribute__((section(".text.start"))) __attribute__((naked)) void start(void) {
@@ -16,6 +15,12 @@ __attribute__((section(".text.start"))) __attribute__((naked)) void start(void) 
         "mv sp, %[stack_top]\n"
         "call main\n"
         "call exit\n" ::[stack_top] "r"(__stack_top));
+}
+
+__attribute__((noreturn)) void exit(void) {
+    syscall(SYS_EXIT, 0, 0, 0);
+    for (;;)
+        ;  // unreachable but just in case
 }
 
 /**

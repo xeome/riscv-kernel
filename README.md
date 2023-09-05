@@ -17,8 +17,11 @@ This is a simple toy kernel for RISC-V.
 - [x] Context switching
 - [x] Exception handling
 - [x] Memory allocation
-- [x] Page tables 
-- [ ] User mode
+- [x] Page tables
+- [x] Virtual memory
+- [x] Syscalls  
+- [x] User mode
+- [x] Interactive shell
 - [ ] Disk device drivers
 - [ ] File IO
 

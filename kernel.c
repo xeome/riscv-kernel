@@ -298,6 +298,22 @@ void handle_syscall(struct trap_frame* f) {
         case SYS_PUTCHAR:
             putchar(f->a0);  // a0 contains the character to write
             break;
+        case SYS_GETCHAR:
+            while (1) {
+                long ch = getchar();
+                if (ch >= 0) {
+                    f->a0 = ch;
+                    break;
+                }
+
+                yield();  // Yield the CPU to allow other processes to run
+            }
+            break;
+        case SYS_EXIT:
+            printf("process %d exited\n", current_proc->pid);
+            current_proc->state = PROC_EXITED;
+            yield();
+            PANIC("unreachable");
         default:
             PANIC("unexpected syscall a3=%x\n", f->a3);
     }
@@ -421,4 +437,9 @@ void map_page(uint32_t* table1, uint32_t vaddr, paddr_t paddr, uint32_t flags) {
     uint32_t vpn0 = (vaddr >> 12) & 0x3ff;  // shift 12 bits to right and mask 10 bits to extract vpn0 (Next 10 bits)
     uint32_t* table0 = (uint32_t*)((table1[vpn1] >> 10) * PAGE_SIZE);  // Get the physical address of the second level page table
     table0[vpn0] = ((paddr / PAGE_SIZE) << 10) | flags | PAGE_V;       // Set the PPN (Page Physical Number) and V (Valid) bit
+}
+
+long getchar(void) {
+    struct sbiret ret = sbi_call(0, 0, 0, 0, 0, 0, 0, 2);
+    return ret.error;
 }
