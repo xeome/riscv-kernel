@@ -9,7 +9,7 @@ typedef uint32_t size_t;
 extern char __bss[], __bss_end[], __stack_top[];
 extern char __free_ram[], __free_ram_end[];
 extern char __kernel_base[];
-extern char _binary_shell_bin_start[], _binary_shell_bin_size[];
+extern char _binary_build_shell_bin_start[], _binary_build_shell_bin_size[];
 
 struct process procs[PROCS_MAX];
 struct process* current_proc;  // Pointer to the currently running process
@@ -349,7 +349,7 @@ void kernel_main(void) {
     idle_proc->pid = -1;  // idle
     current_proc = idle_proc;
 
-    create_process(_binary_shell_bin_start, (size_t)_binary_shell_bin_size);
+    create_process(_binary_build_shell_bin_start, (size_t)_binary_build_shell_bin_size);
 
     yield();
     PANIC("switched to idle\n");
