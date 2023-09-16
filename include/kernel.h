@@ -84,20 +84,26 @@ struct process {
     uint8_t stack[8192];   // 8KB stack
 };
 
-// Function prototypes
-__attribute__((naked)) void switch_context(uint32_t* prev_sp, uint32_t* next_sp);
-__attribute__((naked)) void user_entry(void);
-__attribute__((section(".text.boot"))) __attribute__((naked)) void boot(void);
+// Process management
 
-__attribute__((naked)) __attribute__((aligned(4))) void kernel_entry(void);
+__attribute__((naked)) void switch_context(uint32_t* prev_sp, uint32_t* next_sp);
 struct process* create_process(const void* image, size_t image_size);
+void handle_trap(struct trap_frame* f);
+void trap_handler(struct trap_frame* tf);
+void yield(void);
+void handle_syscall(struct trap_frame* f);
+
+// Memory management
+
 paddr_t alloc_pages(size_t n);
+void map_page(uint32_t* page_table, vaddr_t va, paddr_t pa, uint32_t flags);
+
+// Misc
+
+__attribute__((section(".text.boot"))) __attribute__((naked)) void boot(void);
+__attribute__((naked)) __attribute__((aligned(4))) void kernel_entry(void);
+__attribute__((naked)) void user_entry(void);
 struct sbiret sbi_call(long arg0, long arg1, long arg2, long arg3, long arg4, long arg5, long fid, long eid);
 void putchar(char ch);
-void handle_syscall(struct trap_frame* f);
-void handle_trap(struct trap_frame* f);
 void kernel_main(void);
-void yield(void);
-void map_page(uint32_t* page_table, vaddr_t va, paddr_t pa, uint32_t flags);
 long getchar(void);
-void trap_handler(struct trap_frame* tf);

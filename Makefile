@@ -14,22 +14,22 @@ USER_SRC=user
 BUILD_DIR=build
 
 # Source files
-#SRC_FILES=shell.c user.c common.c kernel.c
 SRC_FILES=$(shell find $(KERNEL_SRC) $(USER_SRC) -name '*.c')
-SHELL_SRC= $(USER_SRC)/shell.c $(USER_SRC)/user.c $(KERNEL_SRC)/common.c
+SHELL_SOURCES= $(USER_SRC)/shell.c $(USER_SRC)/user.c $(KERNEL_SRC)/common.c
+KERNEL_SOURCES= $(wildcard $(KERNEL_SRC)/*.c)
 
 
 # Build targets
-all: shell.bin kernel.elf
+all: $(BUILD_DIR)/shell.bin.o kernel.elf
 
-shell.bin: $(SRC_FILES)
-	$(CC) $(CFLAGS) -Wl,-Tuser.ld -Wl,-Map=$(BUILD_DIR)/shell.map -o $(BUILD_DIR)/shell.elf $(SHELL_SRC)
+$(BUILD_DIR)/shell.bin.o: $(SHELL_SOURCES)
+	$(CC) $(CFLAGS) -Wl,-Tuser.ld -Wl,-Map=$(BUILD_DIR)/shell.map -o $(BUILD_DIR)/shell.elf $(SHELL_SOURCES)
 	$(OBJCOPY) --set-section-flags .bss=alloc,contents -O binary $(BUILD_DIR)/shell.elf $(BUILD_DIR)/shell.bin
 	$(OBJCOPY) -Ibinary -Oelf32-littleriscv $(BUILD_DIR)/shell.bin $(BUILD_DIR)/shell.bin.o
 
-kernel.elf: $(SRC_FILES) $(BUILD_DIR)/shell.bin.o
+kernel.elf: $(BUILD_DIR)/shell.bin.o $(SRC_FILES)
 	$(CC) $(CFLAGS) -Wl,-Tkernel.ld -Wl,-Map=$(BUILD_DIR)/kernel.map -o kernel.elf \
-    	$(KERNEL_SRC)/kernel.c $(KERNEL_SRC)/common.c $(BUILD_DIR)/shell.bin.o
+    	$(KERNEL_SOURCES) $(BUILD_DIR)/shell.bin.o
 
 clean:
 	rm -f $(BUILD_DIR)/*.bin $(BUILD_DIR)/*.elf $(BUILD_DIR)/*.o $(BUILD_DIR)/*.map
