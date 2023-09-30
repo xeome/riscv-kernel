@@ -23,12 +23,12 @@ KERNEL_SOURCES= $(wildcard $(KERNEL_SRC)/*.c)
 all: $(BUILD_DIR)/shell.bin.o kernel.elf
 
 $(BUILD_DIR)/shell.bin.o: $(SHELL_SOURCES)
-	$(CC) $(CFLAGS) -Wl,-Tuser.ld -Wl,-Map=$(BUILD_DIR)/shell.map -o $(BUILD_DIR)/shell.elf $(SHELL_SOURCES)
+	$(CC) $(CFLAGS) -Wl,-Tuser.ld -o $(BUILD_DIR)/shell.elf $(SHELL_SOURCES)
 	$(OBJCOPY) --set-section-flags .bss=alloc,contents -O binary $(BUILD_DIR)/shell.elf $(BUILD_DIR)/shell.bin
 	$(OBJCOPY) -Ibinary -Oelf32-littleriscv $(BUILD_DIR)/shell.bin $(BUILD_DIR)/shell.bin.o
 
 kernel.elf: $(BUILD_DIR)/shell.bin.o $(SRC_FILES)
-	$(CC) $(CFLAGS) -Wl,-Tkernel.ld -Wl,-Map=$(BUILD_DIR)/kernel.map -o kernel.elf \
+	$(CC) $(CFLAGS) -Wl,-Tkernel.ld  -o kernel.elf \
     	$(KERNEL_SOURCES) $(BUILD_DIR)/shell.bin.o
 
 clean:
