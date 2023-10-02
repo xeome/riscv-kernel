@@ -1,5 +1,6 @@
 #include "kernel.h"
 #include "common.h"
+#include "virtio.h"
 
 typedef unsigned char uint8_t;
 typedef unsigned int uint32_t;
@@ -19,10 +20,17 @@ struct process* idle_proc;     // Pointer to the idle process
 // Kernel entry point function
 void kernel_main(void) {
     memset(__bss, 0, (size_t)__bss_end - (size_t)__bss);
-
-    printf("\n\n");
-
     WRITE_CSR(stvec, (uint32_t)kernel_entry);
+
+    virtio_blk_init();
+
+    char buf[SECTOR_SIZE];
+    read_write_disk(buf, 0, false);
+    printf("first sector: %s\n", buf);
+
+    // I know its unsafe, but its only for testing
+    strcpy(buf, "Me when kernel writes to disk\n");
+    read_write_disk(buf, 0, true);
 
     idle_proc = create_process(NULL, 0);
     idle_proc->pid = -1;  // idle
@@ -81,6 +89,9 @@ struct process* create_process(const void* image, size_t image_size) {
     // Map the kernel memory
     for (paddr_t paddr = (paddr_t)__kernel_base; paddr < (paddr_t)__free_ram_end; paddr += PAGE_SIZE)
         map_page(page_table, paddr, paddr, PAGE_R | PAGE_W | PAGE_X);
+
+    // VirtIO-blk
+    map_page(page_table, VIRTIO_BLK_PADDR, VIRTIO_BLK_PADDR, PAGE_R | PAGE_W);
 
     // Map the user memory
     for (uint32_t off = 0; off < image_size; off += PAGE_SIZE) {

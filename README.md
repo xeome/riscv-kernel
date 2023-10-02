@@ -22,12 +22,13 @@ This is a simple toy kernel for RISC-V.
 - [x] Syscalls  
 - [x] User mode
 - [x] Interactive shell
-- [ ] Disk device drivers
-- [ ] File IO
+- [x] Virt-IO basic driver
+- [ ] Filesystem
 
 ## Run
+
 ```bash
-$ ./run.sh
+$ make && ./run.sh
 ```
 
 ---
