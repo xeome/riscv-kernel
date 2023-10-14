@@ -50,6 +50,8 @@ void printf(const char* fmt, ...) {
 
                     break;
                 }
+                case 'p':
+                case 'X':
                 case 'x': {
                     int value = va_arg(vargs, int);
                     for (int i = 7; i >= 0; i--) {

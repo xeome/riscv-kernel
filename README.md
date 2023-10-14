@@ -1,9 +1,11 @@
 # riscv-kernel
-This is a simple toy kernel for RISC-V. 
+
+This is a simple toy kernel for RISC-V.
 
 ---
 
 ## Table of Contents
+
 - [riscv-kernel](#riscv-kernel)
   - [Table of Contents](#table-of-contents)
   - [Features](#features)
@@ -13,6 +15,7 @@ This is a simple toy kernel for RISC-V.
 ---
 
 ## Features
+
 - [x] Printf
 - [x] Context switching
 - [x] Exception handling
@@ -28,12 +31,13 @@ This is a simple toy kernel for RISC-V.
 ## Run
 
 ```bash
-$ make && ./run.sh
+make && ./run.sh
 ```
 
 ---
 
 ## Acknowledgements
+
 - <https://seiya.me/>
 - <https://clang.llvm.org/docs/LanguageExtensions.html>
 - <https://github.com/riscv-software-src/opensbi>

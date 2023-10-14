@@ -2,6 +2,8 @@
 
 extern char __free_ram[], __free_ram_end[];
 
+static paddr_t next_paddr = (paddr_t)__free_ram;  // The next free physical address
+paddr_t free_page_count = 16384;                  // The number of free pages
 /**
  * Maps a physical page to a virtual address in the kernel page table.
  *
@@ -38,13 +40,37 @@ void map_page(uint32_t* table1, uint32_t vaddr, paddr_t paddr, uint32_t flags) {
  * @throws PANIC if there is not enough memory available.
  */
 paddr_t alloc_pages(uint32_t n) {
-    static paddr_t next_paddr = (paddr_t)__free_ram;
     paddr_t paddr = next_paddr;
     next_paddr += n * PAGE_SIZE;
 
     if (next_paddr > (paddr_t)__free_ram_end)
         PANIC("out of memory");
 
+    free_page_count -= n;
     memset((void*)paddr, 0, n * PAGE_SIZE);  // Clear the allocated memory
     return paddr;
+}
+
+void free_pages(size_t n) {
+    if (n > free_page_count)
+        PANIC("freeing more pages than allocated");
+
+    if (n == 0)
+        return;
+
+    if (n == free_page_count) {
+        next_paddr = (paddr_t)__free_ram;
+        free_page_count = 16384;
+        return;
+    }
+
+    if (next_paddr == (paddr_t)__free_ram)
+        PANIC("freeing pages from the beginning of the memory");
+
+    next_paddr -= n * PAGE_SIZE;
+
+    if (next_paddr < (paddr_t)__free_ram)
+        PANIC("next_paddr is less than __free_ram");
+
+    free_page_count += n;
 }

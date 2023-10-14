@@ -96,6 +96,7 @@ void handle_syscall(struct trap_frame* f);
 // Memory management
 
 paddr_t alloc_pages(size_t n);
+void free_pages(size_t n);
 void map_page(uint32_t* page_table, vaddr_t va, paddr_t pa, uint32_t flags);
 
 // Misc

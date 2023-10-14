@@ -22,6 +22,12 @@ void kernel_main(void) {
     memset(__bss, 0, (size_t)__bss_end - (size_t)__bss);
     WRITE_CSR(stvec, (uint32_t)kernel_entry);
 
+    paddr_t test = alloc_pages(1);
+    free_pages(1);
+    paddr_t test2 = alloc_pages(1);
+    if (test != test2)
+        PANIC("free_pages() failed\n");
+
     virtio_blk_init();
 
     char buf[SECTOR_SIZE];
