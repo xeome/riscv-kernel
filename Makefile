@@ -20,7 +20,7 @@ KERNEL_SOURCES= $(wildcard $(KERNEL_SRC)/*.c)
 
 
 # Build targets
-all: $(BUILD_DIR)/shell.bin.o kernel.elf
+all: $(BUILD_DIR)/shell.bin.o kernel.elf disk.tar
 
 $(BUILD_DIR)/shell.bin.o: $(SHELL_SOURCES)
 	$(CC) $(CFLAGS) -Wl,-Tuser.ld -o $(BUILD_DIR)/shell.elf $(SHELL_SOURCES)
@@ -30,6 +30,10 @@ $(BUILD_DIR)/shell.bin.o: $(SHELL_SOURCES)
 kernel.elf: $(BUILD_DIR)/shell.bin.o $(SRC_FILES)
 	$(CC) $(CFLAGS) -Wl,-Tkernel.ld  -o kernel.elf \
     	$(KERNEL_SOURCES) $(BUILD_DIR)/shell.bin.o
+
+# Use tar for file system, ./disk/* are dependencies
+disk.tar: $(wildcard disk/*)
+	tar -cf disk.tar --format=ustar ./disk/*.txt
 
 clean:
 	rm -f $(BUILD_DIR)/*.bin $(BUILD_DIR)/*.elf $(BUILD_DIR)/*.o $(BUILD_DIR)/*.map

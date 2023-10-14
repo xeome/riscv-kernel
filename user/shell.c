@@ -26,6 +26,13 @@ void main(void) {
             exit();
         } else if (strncmp(cmdline, "echo ", 4) == 0) {
             printf("%s\n", cmdline + 5);
+        } else if (strncmp(cmdline, "cat ", 3) == 0) {
+            char buf[128];
+            int len = readfile(cmdline + 4, buf, sizeof(buf));
+            buf[len] = '\0';
+            printf("%s\n", buf);
+        } else if (strncmp(cmdline, "write ", 5) == 0) {
+            writefile(cmdline + 6, cmdline + 6, strlen(cmdline + 6));
         } else {
             printf("unknown command: %s\n", cmdline);
         }

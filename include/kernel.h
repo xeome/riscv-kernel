@@ -15,6 +15,7 @@
 #define USER_BASE 0x1000000    // Base address of user memory
 #define SSTATUS_SPIE (1 << 5)  // Supervisor Previous Interrupt Enable
 #define SCAUSE_ECALL 8         // Environment call from U-mode
+#define SSTATUS_SUM (1 << 18)  // Permit supervisor mode to access user memory
 
 struct sbiret {
     long error;

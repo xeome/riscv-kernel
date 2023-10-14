@@ -26,7 +26,7 @@ This is a simple toy kernel for RISC-V.
 - [x] User mode
 - [x] Interactive shell
 - [x] Virt-IO basic driver
-- [ ] Filesystem
+- [x] Filesystem
 
 ## Run
 

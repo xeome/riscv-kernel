@@ -1,6 +1,7 @@
 #include "kernel.h"
 #include "common.h"
 #include "virtio.h"
+#include "tarfs.h"
 
 typedef unsigned char uint8_t;
 typedef unsigned int uint32_t;
@@ -29,14 +30,7 @@ void kernel_main(void) {
         PANIC("free_pages() failed\n");
 
     virtio_blk_init();
-
-    char buf[SECTOR_SIZE];
-    read_write_disk(buf, 0, false);
-    printf("first sector: %s\n", buf);
-
-    // I know its unsafe, but its only for testing
-    strcpy(buf, "Me when kernel writes to disk\n");
-    read_write_disk(buf, 0, true);
+    fs_init();
 
     idle_proc = create_process(NULL, 0);
     idle_proc->pid = -1;  // idle
@@ -150,6 +144,36 @@ void handle_syscall(struct trap_frame* f) {
             current_proc->state = PROC_EXITED;
             yield();
             PANIC("unreachable");
+        case SYS_READFILE:
+        case SYS_WRITEFILE: {
+            // a0 contains the filename, a1 contains the buffer, a2 contains the length
+            const char* filename = (const char*)f->a0;
+            char* buf = (char*)f->a1;
+            int len = f->a2;
+            // Look up the file
+            struct file* file = fs_lookup(filename);
+            if (!file) {
+                printf("file not found: %s\n", filename);
+                f->a0 = -1;
+                break;
+            }
+
+            // Truncate the length if it is larger than the file size
+            if (len > (int)sizeof(file->data))
+                len = file->size;
+
+            // Read or write the file
+            if (f->a3 == SYS_WRITEFILE) {
+                memcpy(file->data, buf, len);
+                file->size = len;
+                fs_flush();
+            } else {
+                memcpy(buf, file->data, len);
+            }
+
+            f->a0 = len;
+            break;
+        }
         default:
             PANIC("unexpected syscall a3=%x\n", f->a3);
     }

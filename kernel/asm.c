@@ -62,7 +62,7 @@ __attribute__((naked)) void user_entry(void) {
         "csrw sstatus, %[sstatus]\n"
         "sret\n"
         :
-        : [sepc] "r"(USER_BASE), [sstatus] "r"(SSTATUS_SPIE));
+        : [sepc] "r"(USER_BASE), [sstatus] "r"(SSTATUS_SPIE | SSTATUS_SUM));
 }
 
 /**
