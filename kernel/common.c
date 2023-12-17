@@ -53,11 +53,17 @@ void printf(const char* fmt, ...) {
                 case 'p':
                 case 'X':
                 case 'x': {
-                    int value = va_arg(vargs, int);
+                    const int value = va_arg(vargs, int);
                     for (int i = 7; i >= 0; i--) {
-                        int nibble = (value >> (i * 4)) & 0xf;
+                        const int nibble = (value >> (i * 4)) & 0xf;
                         putchar("0123456789abcdef"[nibble]);
                     }
+                }
+                default: {
+                    // Unsupported format specifier. Just print the specifier itself.
+                    putchar('%');
+                    putchar(*fmt);
+                    break;
                 }
             }
         } else {

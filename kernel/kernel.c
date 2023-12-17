@@ -95,7 +95,7 @@ struct process* create_process(const void* image, size_t image_size) {
 
     // Map the user memory
     for (uint32_t off = 0; off < image_size; off += PAGE_SIZE) {
-        paddr_t page = alloc_pages(1);
+        const paddr_t page = alloc_pages(1);
         memcpy((void*)page, image + off, PAGE_SIZE);
         map_page(page_table, USER_BASE + off, page, PAGE_U | PAGE_R | PAGE_W | PAGE_X);  // PAGE_U: user mode accessible
     }
@@ -130,7 +130,7 @@ void handle_syscall(struct trap_frame* f) {
             break;
         case SYS_GETCHAR:
             while (1) {
-                long ch = getchar();
+                const long ch = getchar();
                 if (ch >= 0) {
                     f->a0 = ch;
                     break;
@@ -239,6 +239,6 @@ void yield(void) {
 }
 
 long getchar(void) {
-    struct sbiret ret = sbi_call(0, 0, 0, 0, 0, 0, 0, 2);
+    const struct sbiret ret = sbi_call(0, 0, 0, 0, 0, 0, 0, 2);
     return ret.error;
 }

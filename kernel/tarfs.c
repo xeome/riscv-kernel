@@ -50,7 +50,7 @@ void fs_init(void) {
             PANIC("invalid tar header: magic=\"%s\"", header->magic);
 
         // Populate the file system with the file name, data, and size.
-        int filesz = oct2int(header->size, sizeof(header->size));
+        const int filesz = oct2int(header->size, sizeof(header->size));
         struct file* file = &files[i];
         file->in_use = true;
         strcpy(file->name, header->name);
@@ -68,7 +68,7 @@ void fs_flush(void) {
     memset(disk, 0, sizeof(disk));
     unsigned off = 0;
     for (int file_i = 0; file_i < FILES_MAX; file_i++) {
-        struct file* file = &files[file_i];
+        const struct file* file = &files[file_i];
         if (!file->in_use)
             continue;
 

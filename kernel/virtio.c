@@ -83,7 +83,7 @@ void virtio_blk_init(void) {
 }
 
 struct virtio_virtq* virtq_init(unsigned index) {
-    paddr_t virtq_paddr = alloc_pages(align_up(sizeof(struct virtio_virtq), PAGE_SIZE) / PAGE_SIZE);
+    const paddr_t virtq_paddr = alloc_pages(align_up(sizeof(struct virtio_virtq), PAGE_SIZE) / PAGE_SIZE);
     struct virtio_virtq* vq = (struct virtio_virtq*)virtq_paddr;
     vq->queue_index = index;
     vq->used_index = (volatile uint16_t*)&vq->used.index;
@@ -118,7 +118,7 @@ void virtq_kick(struct virtio_virtq* vq, int desc_index) {
  * @param vq The virtqueue to check.
  * @return True if the virtqueue is busy, false otherwise.
  */
-bool virtq_is_busy(struct virtio_virtq* vq) {
+bool virtq_is_busy(const struct virtio_virtq* vq) {
     return vq->last_used_index != *vq->used_index;
 }
 /**
