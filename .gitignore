@@ -7,3 +7,4 @@
 *.pcap
 
 .vscode
+.trunk

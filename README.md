@@ -9,6 +9,7 @@ This is a simple toy kernel for RISC-V.
 - [riscv-kernel](#riscv-kernel)
   - [Table of Contents](#table-of-contents)
   - [Features](#features)
+  - [Dependencies](#dependencies)
   - [Run](#run)
   - [Acknowledgements](#acknowledgements)
 
@@ -27,6 +28,19 @@ This is a simple toy kernel for RISC-V.
 - [x] Interactive shell
 - [x] Virt-IO basic driver
 - [x] Filesystem
+
+## Dependencies
+
+- clang
+- qemu-system-riscv32
+- llvm-obj-copy
+- lld
+
+For archlinux users:
+
+```bash
+sudo pacman -S clang qemu-system-riscv llvm lld
+```
 
 ## Run
 
