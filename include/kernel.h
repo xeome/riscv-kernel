@@ -95,10 +95,20 @@ void yield(void);
 void handle_syscall(struct trap_frame* f);
 
 // Memory management
+#define NUM_PAGES 16384
+struct free_list {
+    // Free list of physical pages (page frame addresses)
+    paddr_t page_frame_addr[NUM_PAGES];
+    // Index of the first free page frame
+    uint32_t page_frame_free;
+};
 
-paddr_t alloc_pages(size_t n);
-void free_pages(size_t n);
+void init_free_list(struct free_list* free_list);
+paddr_t alloc_page(struct free_list* free_list, size_t n);
+void free_page(struct free_list* free_list, paddr_t paddr);
 void map_page(uint32_t* page_table, vaddr_t va, paddr_t pa, uint32_t flags);
+
+extern struct free_list page_list;
 
 // Misc
 

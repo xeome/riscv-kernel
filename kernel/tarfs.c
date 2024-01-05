@@ -34,9 +34,10 @@ int oct2int(char* oct, int len) {
  */
 void fs_init(void) {
     // Read the disk sector by sector and populate the file system.
-    for (unsigned sector = 0; sector < sizeof(disk) / SECTOR_SIZE; sector++)
+    for (unsigned sector = 0; sector < sizeof(disk) / SECTOR_SIZE; sector++) {
+        printf("Reading disk sector %d\n", sector);
         read_write_disk(&disk[sector * SECTOR_SIZE], sector, false);
-
+    }
     // Parse the tar headers and populate the file system.
     unsigned off = 0;
     for (int i = 0; i < FILES_MAX; i++) {

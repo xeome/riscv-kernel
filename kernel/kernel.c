@@ -23,11 +23,34 @@ void kernel_main(void) {
     memset(__bss, 0, (size_t)__bss_end - (size_t)__bss);
     WRITE_CSR(stvec, (uint32_t)kernel_entry);
 
-    paddr_t test = alloc_pages(1);
-    free_pages(1);
-    paddr_t test2 = alloc_pages(1);
-    if (test != test2)
-        PANIC("free_pages() failed\n");
+    // Initialize the free list
+    init_free_list(&page_list);
+
+    // Test allocator by allocating and freeing a page fragmented
+    printf("Testing start ----------------\n");
+    paddr_t paddr0 = alloc_page(&page_list, 1);
+    paddr_t paddr1 = alloc_page(&page_list, 1);
+    paddr_t paddr2 = alloc_page(&page_list, 1);
+
+    printf("paddr0: %x\n", paddr0);
+    printf("paddr1: %x\n", paddr1);
+    printf("paddr2: %x\n", paddr2);
+
+    free_page(&page_list, paddr1);
+
+    paddr_t paddr3 = alloc_page(&page_list, 1);
+    printf("paddr3: %x\n", paddr3);
+
+    free_page(&page_list, paddr0);
+    free_page(&page_list, paddr2);
+    free_page(&page_list, paddr3);
+
+    paddr_t paddr4 = alloc_page(&page_list, 1);
+    printf("paddr4: %x\n", paddr4);
+
+    free_page(&page_list, paddr4);
+
+    printf("Testing end ----------------\n");
 
     virtio_blk_init();
     fs_init();
@@ -84,7 +107,7 @@ struct process* create_process(const void* image, size_t image_size) {
     *--sp = 0;                     // s0
     *--sp = (uint32_t)user_entry;  // ra
 
-    uint32_t* page_table = (uint32_t*)alloc_pages(1);
+    uint32_t* page_table = (uint32_t*)alloc_page(&page_list, 1);
 
     // Map the kernel memory
     for (paddr_t paddr = (paddr_t)__kernel_base; paddr < (paddr_t)__free_ram_end; paddr += PAGE_SIZE)
@@ -95,7 +118,7 @@ struct process* create_process(const void* image, size_t image_size) {
 
     // Map the user memory
     for (uint32_t off = 0; off < image_size; off += PAGE_SIZE) {
-        const paddr_t page = alloc_pages(1);
+        const paddr_t page = alloc_page(&page_list, 1);
         memcpy((void*)page, image + off, PAGE_SIZE);
         map_page(page_table, USER_BASE + off, page, PAGE_U | PAGE_R | PAGE_W | PAGE_X);  // PAGE_U: user mode accessible
     }
@@ -232,8 +255,7 @@ void yield(void) {
         "sfence.vma\n"
         "csrw sscratch, %[sscratch]\n"
         :
-        : [satp] "r"(SATP_SV32 | ((uint32_t)next->page_table / PAGE_SIZE)), [sscratch] "r"(
-                                                                                (uint32_t)&next->stack[sizeof(next->stack)]));
+        : [satp] "r"(SATP_SV32 | ((uint32_t)next->page_table / PAGE_SIZE)), [sscratch] "r"((uint32_t)&next->stack[sizeof(next->stack)]));
 
     switch_context(&prev->sp, &next->sp);
 }

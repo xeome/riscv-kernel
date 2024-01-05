@@ -78,12 +78,12 @@ void virtio_blk_init(void) {
     printf("virtio-blk: capacity is %d bytes\n", blk_capacity);
 
     // Allocate a page for blk_req
-    blk_req_paddr = alloc_pages(align_up(sizeof(*blk_req), PAGE_SIZE) / PAGE_SIZE);
+    blk_req_paddr = alloc_page(&page_list, align_up(sizeof(*blk_req), PAGE_SIZE) / PAGE_SIZE);
     blk_req = (struct virtio_blk_req*)blk_req_paddr;
 }
 
 struct virtio_virtq* virtq_init(unsigned index) {
-    const paddr_t virtq_paddr = alloc_pages(align_up(sizeof(struct virtio_virtq), PAGE_SIZE) / PAGE_SIZE);
+    const paddr_t virtq_paddr = alloc_page(&page_list, align_up(sizeof(struct virtio_virtq), PAGE_SIZE) / PAGE_SIZE);
     struct virtio_virtq* vq = (struct virtio_virtq*)virtq_paddr;
     vq->queue_index = index;
     vq->used_index = (volatile uint16_t*)&vq->used.index;
